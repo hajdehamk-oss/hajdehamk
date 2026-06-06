@@ -1097,7 +1097,7 @@ export default function POS({ slug }: POSProps) {
       >;
     },
     enabled: !!restaurantId,
-    staleTime: 60_000,
+    staleTime: 300_000,
   });
 
   // Public check — works even when POS is not logged in
@@ -1125,7 +1125,7 @@ export default function POS({ slug }: POSProps) {
       return res.json();
     },
     enabled: !!restaurantId,
-    refetchInterval: 30_000,
+    refetchInterval: 120_000,
   });
 
   const { data: tableAssignmentsData = [], refetch: refetchAssignments } =
@@ -1152,7 +1152,7 @@ export default function POS({ slug }: POSProps) {
         >;
       },
       enabled: !!restaurantId,
-      staleTime: 30_000,
+      staleTime: 120_000,
     });
 
   const pendingCount = dbOrders.filter(
@@ -2129,7 +2129,7 @@ export default function POS({ slug }: POSProps) {
   }, []);
 
   useEffect(() => {
-    const id = setInterval(() => forceUpdate((n) => n + 1), 30000);
+    const id = setInterval(() => forceUpdate((n) => n + 1), 60000);
     return () => clearInterval(id);
   }, []);
 
@@ -2238,7 +2238,7 @@ export default function POS({ slug }: POSProps) {
         .then((r) => r.json())
         .then((rows) => applyServerRows(rows, false))
         .catch(() => {});
-    }, 10000);
+    }, 60000);
     return () => clearInterval(interval);
   }, [restaurantId, applyServerRows]);
 
@@ -2272,7 +2272,7 @@ export default function POS({ slug }: POSProps) {
           }),
         }).catch(() => {});
       });
-    }, 700);
+    }, 3000);
     return () => {
       if (syncTimerRef.current) clearTimeout(syncTimerRef.current);
     };
@@ -2838,7 +2838,7 @@ export default function POS({ slug }: POSProps) {
 
       {/* ══════════════════════════════════════════════════════════════════════
           SCREEN: TABLES
-      ═ ��════════════════════════════════════════════════════════════════════ */}
+        � ��════════════════════════════════════════════════════════════════════ */}
       <AnimatePresence mode="wait">
         {screen === "tables" && (
           <motion.div
