@@ -1,10 +1,16 @@
 import express, { type Request, Response, NextFunction } from "express";
+import compression from "compression";
 import { registerRoutes } from "./routes.js";
 import { serveStatic } from "./static.js";
 import { createServer } from "http";
 
 const app = express();
 const httpServer = createServer(app);
+
+// Gzip/deflate all responses to reduce bytes on the wire.
+// This shrinks transfer size only — response bodies are byte-for-byte identical
+// once decompressed, so no app behavior changes.
+app.use(compression());
 
 declare module "http" {
   interface IncomingMessage {
