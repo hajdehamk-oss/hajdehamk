@@ -239,7 +239,7 @@ export async function registerRoutes(
   });
 
   app.get("/api/config/pusher", (_req, res) => {
-    res.set("Cache-Control", "public, max-age=3600");
+    res.set("Cache-Control", "public, max-age=86400, s-maxage=86400");
     res.json({
       key: PUSHER_KEY,
       cluster: PUSHER_CLUSTER,

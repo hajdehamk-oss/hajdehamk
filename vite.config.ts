@@ -41,7 +41,17 @@ export default defineConfig({
         ],
       },
       workbox: {
+        navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
+          {
+            // Never cache API routes — always hit the network for fresh data.
+            // Cache-Control headers on the server handle any caching instead.
+            urlPattern: /\/api\/.*/i,
+            handler: "NetworkOnly",
+            options: {
+              cacheName: "api-no-cache",
+            },
+          },
           {
             urlPattern: /^https:\/\/.*\.(png|jpg|jpeg|webp|svg)$/i,
             handler: "CacheFirst",
