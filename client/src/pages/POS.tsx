@@ -1038,6 +1038,7 @@ export default function POS({ slug }: POSProps) {
   const processedOrderIdsRef = useRef<Set<number>>(new Set());
 
   useEffect(() => {
+    if (!restaurant?.tableCount) return; // wait for real data
     setTables((prev) => {
       if (prev.length === TABLE_COUNT) return prev;
       if (prev.length < TABLE_COUNT)
@@ -1047,7 +1048,7 @@ export default function POS({ slug }: POSProps) {
         ];
       return prev.slice(0, TABLE_COUNT);
     });
-  }, [TABLE_COUNT]);
+  }, [TABLE_COUNT, restaurant?.tableCount]);
 
   const [personTabs, setPersonTabs] = useState<PersonTab[]>(() => {
     try {
