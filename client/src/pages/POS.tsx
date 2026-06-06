@@ -971,6 +971,7 @@ export default function POS({ slug }: POSProps) {
       return res.json() as Promise<Restaurant>;
     },
     retry: false,
+    staleTime: 5 * 60 * 1000,
   });
 
   const TABLE_COUNT = restaurant?.tableCount || 6;
@@ -1109,7 +1110,7 @@ export default function POS({ slug }: POSProps) {
       return res.json() as Promise<{ hasWaiters: boolean }>;
     },
     enabled: !!RESTAURANT_SLUG,
-    staleTime: 60_000,
+    staleTime: 5 * 60 * 1000,
   });
 
   const waiters = waitersQuery.data ?? [];
@@ -1125,6 +1126,7 @@ export default function POS({ slug }: POSProps) {
       return res.json();
     },
     enabled: !!restaurantId,
+    staleTime: 30_000,
     refetchInterval: 120_000,
   });
 
@@ -1152,7 +1154,7 @@ export default function POS({ slug }: POSProps) {
         >;
       },
       enabled: !!restaurantId,
-      staleTime: 120_000,
+      staleTime: 30_000,
     });
 
   const pendingCount = dbOrders.filter(
