@@ -29,16 +29,22 @@ interface TableRoom {
 const tableRooms = new Map<string, TableRoom>();
 // ── Pusher server client ──────────────────────────────────────────────────────
 const PUSHER_APP_ID = process.env.PUSHER_APP_ID || "";
-const PUSHER_KEY    = process.env.PUSHER_KEY    || process.env.VITE_PUSHER_KEY    || "";
+const PUSHER_KEY = process.env.PUSHER_KEY || process.env.VITE_PUSHER_KEY || "";
 const PUSHER_SECRET = process.env.PUSHER_SECRET || "";
-const PUSHER_CLUSTER = process.env.PUSHER_CLUSTER || process.env.VITE_PUSHER_CLUSTER || "";
+const PUSHER_CLUSTER =
+  process.env.PUSHER_CLUSTER || process.env.VITE_PUSHER_CLUSTER || "";
 
-const pusherConfigured = !!(PUSHER_APP_ID && PUSHER_KEY && PUSHER_SECRET && PUSHER_CLUSTER);
+const pusherConfigured = !!(
+  PUSHER_APP_ID &&
+  PUSHER_KEY &&
+  PUSHER_SECRET &&
+  PUSHER_CLUSTER
+);
 
 const pusherServer = pusherConfigured
   ? new Pusher({
       appId: PUSHER_APP_ID,
-      key:   PUSHER_KEY,
+      key: PUSHER_KEY,
       secret: PUSHER_SECRET,
       cluster: PUSHER_CLUSTER,
       useTLS: true,
@@ -292,12 +298,18 @@ export async function registerRoutes(
       try {
         console.log("[place-order] channel received:", channel);
         const m = String(channel).match(/^table-(.+)-(\d+)$/);
-        console.log("[place-order] regex match:", m ? `slug="${m[1]}" table="${m[2]}"` : "no match");
+        console.log(
+          "[place-order] regex match:",
+          m ? `slug="${m[1]}" table="${m[2]}"` : "no match",
+        );
         if (m) {
           const slug = m[1];
           console.log("[place-order] looking up restaurant slug:", slug);
           const restaurant = await storage.getRestaurantBySlug(slug);
-          console.log("[place-order] restaurant found:", restaurant ? restaurant.name : "NOT FOUND");
+          console.log(
+            "[place-order] restaurant found:",
+            restaurant ? restaurant.name : "NOT FOUND",
+          );
           if (restaurant) {
             // Always fire to POS so orders panel always works
             await safeTrigger(`pos-${slug}`, "incoming-order", {
@@ -366,6 +378,7 @@ export async function registerRoutes(
   app.get("/api/waiters/check", async (req, res) => {
     const slug = req.query.slug as string;
     if (!slug) return res.status(400).json({ message: "slug required" });
+    res.set("Cache-Control", "public, max-age=300, s-maxage=300");
     const restaurant = await storage.getRestaurantBySlug(slug);
     if (!restaurant) return res.status(404).json({ message: "Not found" });
     const list = await storage.getWaiters(restaurant.id);
@@ -374,14 +387,14 @@ export async function registerRoutes(
 
   app.post("/api/waiters/validate-pin", async (req, res) => {
     const { slug, pinCode } = req.body;
-    if (!slug || !pinCode) return res.status(400).json({ message: "slug and pinCode required" });
+    if (!slug || !pinCode)
+      return res.status(400).json({ message: "slug and pinCode required" });
     const restaurant = await storage.getRestaurantBySlug(slug);
     if (!restaurant) return res.status(404).json({ message: "Not found" });
     const waiter = await storage.getWaiterByPin(restaurant.id, String(pinCode));
     if (!waiter) return res.status(401).json({ message: "Invalid PIN" });
     return res.json({ id: waiter.id, name: waiter.name });
   });
-
 
   // === PUBLIC RESTAURANTS — /api/restaurants[?slug=X] ===
   // Images are stripped from this response and served via /api/menu-image/:id
@@ -448,7 +461,9 @@ export async function registerRoutes(
 
       if (action === "create") {
         if (user.username !== "hajdeha")
-          return res.status(403).json({ message: "Only the platform admin can create restaurants" });
+          return res.status(403).json({
+            message: "Only the platform admin can create restaurants",
+          });
         const result = api.restaurants.create.input.safeParse(req.body);
         if (!result.success)
           return res.status(400).json({
@@ -691,7 +706,12 @@ export async function registerRoutes(
   app.post("/api/kitchen/order-ready", async (req, res) => {
     try {
       const { slug, tableNumber } = req.body;
-      console.log("[order-ready] received:", { slug, tableNumber, pusherConfigured, pusherServerNull: !pusherServer });
+      console.log("[order-ready] received:", {
+        slug,
+        tableNumber,
+        pusherConfigured,
+        pusherServerNull: !pusherServer,
+      });
       if (!slug || !tableNumber)
         return res.status(400).json({ message: "Missing fields" });
       await safeTrigger(`pos-${slug}`, "order-ready", {
@@ -712,7 +732,10 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Missing fields" });
       // Always mark all open orders for this table as completed so the
       // DB poll never re-stamps their note onto the now-empty table
-      await storage.completeOrdersForTable(Number(restaurantId), Number(tableNumber));
+      await storage.completeOrdersForTable(
+        Number(restaurantId),
+        Number(tableNumber),
+      );
       // Only create a new completed order when there are actual items (for profit tracking)
       if (Array.isArray(items) && items.length > 0) {
         const order = await storage.createOrder({
@@ -756,6 +779,7 @@ export async function registerRoutes(
       const restaurantId = parseInt(req.query.restaurantId as string);
       if (isNaN(restaurantId))
         return res.status(400).json({ message: "restaurantId required" });
+      res.set("Cache-Control", "no-store");
       const status = req.query.status as string | undefined;
       const list = await storage.getOrders(restaurantId, status);
       const waiters = await storage.getWaiters(restaurantId);
@@ -763,7 +787,12 @@ export async function registerRoutes(
       const enriched = list.map((o) => {
         let parsedCart: any[] = [];
         try {
-          parsedCart = typeof o.cart === "string" ? JSON.parse(o.cart) : (Array.isArray(o.cart) ? o.cart : []);
+          parsedCart =
+            typeof o.cart === "string"
+              ? JSON.parse(o.cart)
+              : Array.isArray(o.cart)
+                ? o.cart
+                : [];
         } catch {
           parsedCart = [];
         }
@@ -834,7 +863,9 @@ export async function registerRoutes(
   app.get("/api/pos/table-state", async (req, res) => {
     try {
       const restaurantId = parseInt(req.query.restaurantId as string);
-      if (isNaN(restaurantId)) return res.status(400).json({ message: "restaurantId required" });
+      if (isNaN(restaurantId))
+        return res.status(400).json({ message: "restaurantId required" });
+      res.set("Cache-Control", "no-store");
       const rows = await storage.getPosTableStates(restaurantId);
       return res.json(rows);
     } catch (err: any) {
@@ -847,7 +878,11 @@ export async function registerRoutes(
       const { restaurantId, tableNumber, stateJson, slug, deviceId } = req.body;
       if (!restaurantId || !tableNumber || !stateJson || !slug)
         return res.status(400).json({ message: "Missing fields" });
-      await storage.upsertPosTableState(Number(restaurantId), Number(tableNumber), stateJson);
+      await storage.upsertPosTableState(
+        Number(restaurantId),
+        Number(tableNumber),
+        stateJson,
+      );
       await safeTrigger(`pos-${slug}`, "table-state-updated", {
         tableNumber: Number(tableNumber),
         stateJson,
@@ -864,7 +899,10 @@ export async function registerRoutes(
       const { restaurantId, tableNumber, slug, deviceId } = req.body;
       if (!restaurantId || !tableNumber || !slug)
         return res.status(400).json({ message: "Missing fields" });
-      await storage.clearPosTableState(Number(restaurantId), Number(tableNumber));
+      await storage.clearPosTableState(
+        Number(restaurantId),
+        Number(tableNumber),
+      );
       await safeTrigger(`pos-${slug}`, "table-state-cleared", {
         tableNumber: Number(tableNumber),
         deviceId: deviceId || null,
@@ -879,7 +917,9 @@ export async function registerRoutes(
   app.get("/api/pos/table-assignments", async (req, res) => {
     try {
       const restaurantId = parseInt(req.query.restaurantId as string);
-      if (isNaN(restaurantId)) return res.status(400).json({ message: "restaurantId required" });
+      if (isNaN(restaurantId))
+        return res.status(400).json({ message: "restaurantId required" });
+      res.set("Cache-Control", "public, max-age=30, s-maxage=30");
       const rows = await storage.getTableAssignments(restaurantId);
       return res.json(rows);
     } catch (err: any) {
@@ -892,7 +932,11 @@ export async function registerRoutes(
       const { restaurantId, tableNumber, waiterId } = req.body;
       if (!restaurantId || !tableNumber || !waiterId)
         return res.status(400).json({ message: "Missing fields" });
-      await storage.upsertTableAssignment(Number(restaurantId), Number(tableNumber), Number(waiterId));
+      await storage.upsertTableAssignment(
+        Number(restaurantId),
+        Number(tableNumber),
+        Number(waiterId),
+      );
       const restaurant = await storage.getRestaurant(Number(restaurantId));
       if (restaurant) {
         const waiter = await storage.getWaiter(Number(waiterId));
@@ -913,7 +957,10 @@ export async function registerRoutes(
       const { restaurantId, tableNumber } = req.body;
       if (!restaurantId || !tableNumber)
         return res.status(400).json({ message: "Missing fields" });
-      await storage.deleteTableAssignment(Number(restaurantId), Number(tableNumber));
+      await storage.deleteTableAssignment(
+        Number(restaurantId),
+        Number(tableNumber),
+      );
       const restaurant = await storage.getRestaurant(Number(restaurantId));
       if (restaurant) {
         await safeTrigger(`pos-${restaurant.slug}`, "table-released", {
@@ -970,13 +1017,20 @@ export async function registerRoutes(
       const waiterMap = new Map(waiterList.map((w) => [w.id, w.name]));
 
       // Build: { waiterId -> { total, byDay: { "YYYY-MM-DD" -> total } } }
-      const earningsMap = new Map<number | null, { total: number; byDay: Map<string, number> }>();
+      const earningsMap = new Map<
+        number | null,
+        { total: number; byDay: Map<string, number> }
+      >();
       for (const order of filtered) {
         const key = order.waiterId ?? null;
         const dateKey = new Date(order.createdAt).toISOString().slice(0, 10);
         const cart = JSON.parse(order.cart);
-        const total = cart.reduce((s: number, i: any) => s + i.price * i.qty, 0);
-        if (!earningsMap.has(key)) earningsMap.set(key, { total: 0, byDay: new Map() });
+        const total = cart.reduce(
+          (s: number, i: any) => s + i.price * i.qty,
+          0,
+        );
+        if (!earningsMap.has(key))
+          earningsMap.set(key, { total: 0, byDay: new Map() });
         const entry = earningsMap.get(key)!;
         entry.total += total;
         entry.byDay.set(dateKey, (entry.byDay.get(dateKey) ?? 0) + total);
@@ -991,12 +1045,16 @@ export async function registerRoutes(
         days.push(d.toISOString().slice(0, 10));
       }
 
-      const earnings = Array.from(earningsMap.entries()).map(([waiterId, { total, byDay }]) => ({
-        waiterId,
-        waiterName: waiterId ? (waiterMap.get(waiterId) ?? "Unknown") : "Pa kamarier",
-        total,
-        byDay: days.map((date) => ({ date, total: byDay.get(date) ?? 0 })),
-      }));
+      const earnings = Array.from(earningsMap.entries()).map(
+        ([waiterId, { total, byDay }]) => ({
+          waiterId,
+          waiterName: waiterId
+            ? (waiterMap.get(waiterId) ?? "Unknown")
+            : "Pa kamarier",
+          total,
+          byDay: days.map((date) => ({ date, total: byDay.get(date) ?? 0 })),
+        }),
+      );
 
       return res.json({ earnings, days });
     } catch (err: any) {
