@@ -1,0 +1,42 @@
+modules = ["nodejs-20", "typescript-language-server", "postgresql-16"]
+[nix]
+channel = "stable-25_05"
+packages = ["unzip", "nano"]
+
+[agent]
+expertMode = true
+stack = "FULLSTACK_JS"
+integrations = ["javascript_anthropic_ai_integrations:2.0.0"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+build = ["npm", "run", "build"]
+run = ["node", "./dist/index.cjs"]
+deploymentTarget = "autoscale"

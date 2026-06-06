@@ -1,0 +1,104 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/**/*.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist/public"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "^/favicon\\.png$",
+      "dest": "/favicon.png"
+    },
+    {
+      "src": "^/manifest\\.json$",
+      "dest": "/manifest.json",
+      "headers": {
+        "Content-Type": "application/manifest+json",
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "src": "^/sw\\.js$",
+      "dest": "/sw.js",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Service-Worker-Allowed": "/",
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "src": "^/service-worker\\.js$",
+      "dest": "/service-worker.js",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Service-Worker-Allowed": "/",
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "src": "^/registerSW\\.js$",
+      "dest": "/registerSW.js",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Cache-Control": "no-cache"
+      }
+    },
+    {
+      "src": "^/([\\w\\-\\.]+\\.js)$",
+      "dest": "/$1",
+      "headers": {
+        "Content-Type": "application/javascript",
+        "Cache-Control": "public, max-age=31536000"
+      }
+    },
+    {
+      "src": "^/icon-192\\.png$",
+      "dest": "/icon-192.png"
+    },
+    {
+      "src": "^/icon-512\\.png$",
+      "dest": "/icon-512.png"
+    },
+    {
+      "src": "^/apple-touch-icon\\.png$",
+      "dest": "/apple-touch-icon.png"
+    },
+    {
+      "src": "^/api/auth$",
+      "dest": "api/auth.ts"
+    },
+    {
+      "src": "^/api/restaurants$",
+      "dest": "api/restaurants.ts"
+    },
+    {
+      "src": "^/api/admin/restaurants$",
+      "dest": "api/admin/restaurants.ts"
+    },
+    {
+      "src": "^/api/admin/menu$",
+      "dest": "api/admin/menu.ts"
+    },
+    {
+      "src": "^/api/(.*)",
+      "dest": "api/index.ts"
+    },
+    {
+      "src": "^/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+  publicDir: path.resolve(import.meta.dirname, "public"),

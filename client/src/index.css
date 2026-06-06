@@ -1,0 +1,117 @@
+@import "react-day-picker/dist/style.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Elegant, appetizing color palette - Light Mode */
+  --background: 30 20% 98%;      /* Soft warm white */
+  --foreground: 20 10% 15%;      /* Dark charcoal */
+
+  --primary: 15 75% 55%;         /* Terracotta / Burnt Orange */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 35 30% 92%;       /* Beige/Oatmeal */
+  --secondary-foreground: 20 10% 15%;
+
+  --muted: 35 20% 94%;
+  --muted-foreground: 25 10% 45%;
+
+  --accent: 150 40% 94%;         /* Soft Sage Green background */
+  --accent-foreground: 150 50% 35%; /* Sage Green text */
+
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 35 15% 85%;
+  --input: 35 15% 85%;
+  --ring: 15 75% 55%;
+
+  --radius: 0.75rem;
+  --font-sans: 'DM Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
+}
+
+.dark {
+  /* Dark Mode - Elegant restaurant atmosphere */
+  --background: 20 10% 10%;      /* Deep charcoal */
+  --foreground: 30 20% 98%;      /* Soft warm white */
+
+  --primary: 15 75% 60%;         /* Brighter terracotta for visibility */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 20 10% 15%;       /* Darker background elements */
+  --secondary-foreground: 30 20% 98%;
+
+  --muted: 20 10% 15%;
+  --muted-foreground: 30 10% 65%;
+
+  --accent: 150 30% 20%;         /* Deep sage green */
+  --accent-foreground: 150 40% 80%; /* Light sage text */
+
+  --destructive: 0 62% 50%;      /* Adjusted for dark mode */
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 20 10% 20%;
+  --input: 20 10% 20%;
+  --ring: 15 75% 60%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    /* Prevents the horizontal scrollbar from appearing during animations */
+    overflow-x: hidden;
+    /* Fixes height issues on mobile browsers */
+    height: -webkit-fill-available;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary/20;
+    font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    /* CRITICAL FIXES: */
+    width: 100%;
+    overflow-x: clip; /* Kills horizontal scroll from x:-20 animations */
+    min-height: 100dvh;
+    min-height: 100svh;
+    margin: 0;
+    padding: 0;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply font-bold tracking-tight text-foreground;
+  }
+}
+
+/* Smooth transitions for dark mode */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Custom scrollbar for menu lists */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-border rounded-full hover:bg-muted-foreground/50 transition-colors;
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

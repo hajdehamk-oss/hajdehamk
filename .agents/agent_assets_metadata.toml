@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "FmewEqTs_p2mQidlvuLPc"
+uri = "file://backup.sql.gz"
+type = "unspecified"
+title = "Database Backup (backup.sql.gz)"
