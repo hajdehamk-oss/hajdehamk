@@ -15,8 +15,8 @@
   ],
   "routes": [
     {
-      "src": "^/favicon\\.png$",
-      "dest": "/favicon.png"
+      "src": "^/favicon\\.webp$",
+      "dest": "/favicon.webp"
     },
     {
       "src": "^/manifest\\.json$",
@@ -76,16 +76,16 @@
       }
     },
     {
-      "src": "^/icon-192\\.png$",
-      "dest": "/icon-192.png"
+      "src": "^/icon-192\\.webp$",
+      "dest": "/icon-192.webp"
     },
     {
-      "src": "^/icon-512\\.png$",
-      "dest": "/icon-512.png"
+      "src": "^/icon-512\\.webp$",
+      "dest": "/icon-512.webp"
     },
     {
-      "src": "^/apple-touch-icon\\.png$",
-      "dest": "/apple-touch-icon.png"
+      "src": "^/apple-touch-icon\\.webp$",
+      "dest": "/apple-touch-icon.webp"
     },
     {
       "src": "^/api/auth$",

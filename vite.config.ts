@@ -13,7 +13,7 @@ export default defineConfig({
     runtimeErrorOverlay(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "icon-192.png", "icon-512.png"],
+      includeAssets: ["favicon.ico", "icon-192.webp", "icon-512.webp"],
       manifest: {
         name: "HAJDE HA",
         short_name: "HAJDE HA",
@@ -27,13 +27,13 @@ export default defineConfig({
         lang: "sq",
         icons: [
           {
-            src: "/icon-192.png",
+            src: "/icon-192.webp",
             sizes: "192x192",
             type: "image/png",
             purpose: "any maskable",
           },
           {
-            src: "/icon-512.png",
+            src: "/icon-512.webp",
             sizes: "512x512",
             type: "image/png",
             purpose: "any maskable",
