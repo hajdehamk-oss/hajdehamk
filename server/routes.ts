@@ -77,8 +77,19 @@ export async function registerRoutes(
 
   // Auto-cleanup: delete orders older than 1 day every hour
   const cleanOldOrders = async () => {
-    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    await db.delete(ordersTable).where(lt(ordersTable.createdAt, cutoff));
+    const cutoff24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const cutoff30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    await db
+      .delete(ordersTable)
+      .where(
+        sql`${ordersTable.createdAt} < ${cutoff24h} AND ${ordersTable.status} != 'completed'`,
+      );
+    await db
+      .delete(ordersTable)
+      .where(
+        sql`${ordersTable.createdAt} < ${cutoff30d} AND ${ordersTable.status} = 'completed'`,
+      );
   };
   cleanOldOrders();
   setInterval(cleanOldOrders, 60 * 60 * 1000);
@@ -1008,9 +1019,7 @@ export async function registerRoutes(
 
       const allOrders = await storage.getOrders(restaurantId);
       const filtered = allOrders.filter(
-        (o) =>
-          (o.status === "claimed" || o.status === "completed") &&
-          new Date(o.createdAt) >= from,
+        (o) => o.status === "completed" && new Date(o.createdAt) >= from,
       );
 
       const waiterList = await storage.getWaiters(restaurantId);
@@ -1025,10 +1034,13 @@ export async function registerRoutes(
         const key = order.waiterId ?? null;
         const dateKey = new Date(order.createdAt).toISOString().slice(0, 10);
         const cart = JSON.parse(order.cart);
-        const total = cart.reduce(
-          (s: number, i: any) => s + i.price * i.qty,
-          0,
-        );
+        const total = cart.reduce((s: number, i: any) => {
+          const price =
+            typeof i.price === "number"
+              ? i.price
+              : parseFloat(String(i.price).replace(/[^\d.]/g, ""));
+          return s + (isNaN(price) ? 0 : price * (i.qty ?? 1));
+        }, 0);
         if (!earningsMap.has(key))
           earningsMap.set(key, { total: 0, byDay: new Map() });
         const entry = earningsMap.get(key)!;
