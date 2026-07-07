@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hajde Ha POS — Setup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f8f4f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      color: #E8450A;
+      margin-bottom: 8px;
+    }
+    h1 { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+    p { font-size: 14px; color: #666; margin-bottom: 32px; }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+    }
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-bottom: 20px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #E8450A; }
+    .hint { font-size: 12px; color: #999; margin-top: -16px; margin-bottom: 20px; }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #E8450A;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #c93b09; }
+    .error { color: #E8450A; font-size: 13px; margin-bottom: 16px; display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🍴 Hajde Ha</div>
+    <h1>POS Setup</h1>
+    <p>Enter your restaurant details to get started. You only need to do this once.</p>
+
+    <div class="error" id="error"></div>
+
+    <label>Restaurant Slug</label>
+    <input id="slug" type="text" placeholder="doner" />
+    <div class="hint">The part after hajdeha.com/pos/ — e.g. "doner"</div>
+
+    <label>Pusher Key</label>
+    <input id="pusherKey" type="text" placeholder="abc123def456" />
+
+    <label>Pusher Cluster</label>
+    <input id="pusherCluster" type="text" placeholder="eu" />
+    <div class="hint">Found in your Pusher dashboard — usually "eu", "us2", etc.</div>
+
+    <button onclick="save()">Start POS →</button>
+  </div>
+
+  <script>
+    async function save() {
+      const slug = document.getElementById('slug').value.trim();
+      const pusherKey = document.getElementById('pusherKey').value.trim();
+      const pusherCluster = document.getElementById('pusherCluster').value.trim();
+      const err = document.getElementById('error');
+
+      if (!slug || !pusherKey || !pusherCluster) {
+        err.textContent = 'All fields are required.';
+        err.style.display = 'block';
+        return;
+      }
+
+      err.style.display = 'none';
+      await window.electronAPI.saveConfig({ slug, pusherKey, pusherCluster });
+      await window.electronAPI.restartApp();
+    }
+  </script>
+</body>
+</html>

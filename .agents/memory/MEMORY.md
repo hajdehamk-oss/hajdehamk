@@ -1,0 +1,2 @@
+- [Electron local mode architecture](electron-local-mode.md) — local Express+SQLite server inside Electron; binds to 127.0.0.1 when IS_ELECTRON=true; syncs from cloud on startup
+- [Electron build pipeline](electron-build-pipeline.md) — ESM output for server (.mjs), CJS for main.cjs + preload.js; must stay consistent or packaged app fails to start
