@@ -12,31 +12,7 @@ const sharedOpts = {
   logLevel: "info" as const,
 };
 
-// 1. Local server (Express + SQLite)
-await build({
-  ...sharedOpts,
-  entryPoints: ["server/index-local.ts"],
-  outfile: "dist/index-local.cjs",
-  // Don't pull in vite (only used in dev mode, loaded dynamically)
-  external: ["vite", "vite-plugin-pwa", "@vitejs/*", "@replit/*"],
-  banner: {
-    js: `
-// ESM shim for CJS bundle
-import { createRequire } from 'module';
-import { fileURLToPath as _ftu } from 'url';
-import { dirname as _dn } from 'path';
-const require = createRequire(import.meta.url);
-const __filename = _ftu(import.meta.url);
-const __dirname = _dn(__filename);
-`.trim(),
-  },
-  format: "esm", // Use ESM so top-level await in dynamic imports works
-  outExtension: { ".js": ".mjs" },
-  outfile: undefined,
-  outdir: undefined,
-});
-
-// Actually use ESM (mjs) for all three to avoid top-level-await restrictions:
+// Build all three Electron artifacts in parallel
 await Promise.all([
   // Local server — ESM so top-level await in dynamic imports works
   build({
