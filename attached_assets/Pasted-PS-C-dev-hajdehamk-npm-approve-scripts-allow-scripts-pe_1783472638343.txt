@@ -1,0 +1,47 @@
+PS C:\dev\hajdehamk> npm approve-scripts --allow-scripts-pending
+9 packages have install scripts not yet covered by allowScripts:
+  esbuild@0.28.1 (postinstall: node install.js)
+  esbuild@0.27.0 (postinstall: node install.js)
+  better-sqlite3@12.11.1 (install: node-gyp rebuild)
+  bufferutil@4.1.0 (install: node-gyp rebuild)
+  electron@41.10.1 (postinstall: node install.js)
+  electron-winstaller@5.4.0 (install: node ./script/select-7z-arch.js)
+  esbuild@0.25.12 (postinstall: node install.js)
+  esbuild@0.28.1 (postinstall: node install.js)
+  esbuild@0.28.1 (postinstall: node install.js)
+
+Run `npm approve-scripts <pkg>` to allow, or `npm deny-scripts <pkg>` to deny.
+PS C:\dev\hajdehamk> npm install
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@renovatebot/pep440@4.2.1',
+npm warn EBADENGINE   required: { node: '^20.9.0 || ^22.11.0 || ^24', pnpm: '^10.0.0' },
+npm warn EBADENGINE   current: { node: 'v26.4.0', npm: '11.17.0' }
+npm warn EBADENGINE }
+
+up to date, audited 1120 packages in 4s
+
+185 packages are looking for funding
+  run `npm fund` for details
+
+12 vulnerabilities (4 moderate, 8 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm warn allow-scripts 9 packages have install scripts not yet covered by allowScripts:
+npm warn allow-scripts   esbuild@0.28.1 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.27.0 (postinstall: node install.js)
+npm warn allow-scripts   better-sqlite3@12.11.1 (install: node-gyp rebuild)
+npm warn allow-scripts   bufferutil@4.1.0 (install: node-gyp rebuild)
+npm warn allow-scripts   electron@41.10.1 (postinstall: node install.js)
+npm warn allow-scripts   electron-winstaller@5.4.0 (install: node ./script/select-7z-arch.js)
+npm warn allow-scripts   esbuild@0.25.12 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.28.1 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.28.1 (postinstall: node install.js)
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+PS C:\dev\hajdehamk>
