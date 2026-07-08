@@ -5,14 +5,14 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development node --import tsx/esm server/index.ts",
-    "build": "node --experimental-strip-types script/build.ts",
+    "build": "node script/build.mjs",
     "vercel-build": "npm run build",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
     "db:push": "drizzle-kit push",
     "electron:dev": "NODE_ENV=development node --import tsx/esm server/index-local.ts",
-    "electron:build:server": "node --experimental-strip-types script/build-local.ts",
-    "electron:build:frontend": "node --experimental-strip-types script/build.ts",
+    "electron:build:server": "node script/build-local.mjs",
+    "electron:build:frontend": "node script/build.mjs",
     "electron:build": "npm run electron:build:frontend && npm run electron:build:server && electron-builder",
     "electron:pack": "electron-builder --dir"
   },
