@@ -3,9 +3,24 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 import { VitePWA } from "vite-plugin-pwa";
+import { transform as esbuildTransform } from "esbuild";
+
+// Plugin to transform TypeScript files outside the Vite root (e.g. shared/).
+// On Windows, Vite's built-in esbuild plugin only handles files inside the root
+// directory; files outside fall through to vite:load-fallback which can't parse TS.
+const transformSharedTs = {
+  name: "transform-shared-ts",
+  async transform(code: string, id: string) {
+    if (id.endsWith(".ts") && !id.endsWith(".d.ts") && id.includes("/shared/")) {
+      const result = await esbuildTransform(code, { loader: "ts", target: "es2020" });
+      return { code: result.code, map: result.map || null };
+    }
+  },
+};
 
 export default defineConfig({
   plugins: [
+    transformSharedTs,
     react({
       jsxRuntime: "automatic",
       babel: { plugins: [] },
