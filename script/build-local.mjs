@@ -3,24 +3,33 @@
  * Run: npm run electron:build:server
  */
 import { build } from "esbuild";
+import { readFile } from "fs/promises";
+
+const pkg = JSON.parse(await readFile("package.json", "utf-8"));
+
+// All npm deps are external — they live in node_modules at runtime inside the asar
+const external = [
+  ...Object.keys(pkg.dependencies || {}),
+  ...Object.keys(pkg.devDependencies || {}),
+  ...Object.keys(pkg.optionalDependencies || {}),
+  "electron",
+];
 
 const sharedOpts = {
   bundle: true,
-  packages: "external", // keep all node_modules external
+  external,
   platform: "node",
-  format: "cjs",
   logLevel: "info",
 };
 
 // Build all three Electron artifacts in parallel
 await Promise.all([
-  // Local server — ESM so top-level await in dynamic imports works
+  // Local server — ESM so top-level await works
   build({
     ...sharedOpts,
     entryPoints: ["server/index-local.ts"],
     outfile: "dist/index-local.mjs",
     format: "esm",
-    external: ["vite", "vite-plugin-pwa", "@vitejs/*", "@replit/*", "better-sqlite3"],
   }),
 
   // Electron main process — CJS (Electron default)
@@ -29,19 +38,17 @@ await Promise.all([
     entryPoints: ["electron/main.ts"],
     outfile: "electron/main.cjs",
     format: "cjs",
-    external: ["electron"],
     banner: {
       js: `const __filename = require('path').resolve(process.argv[1]); const __dirname = require('path').dirname(__filename);`,
     },
   }),
 
-  // Preload — CJS, output as .js so Electron finds it with standard reference
+  // Preload — CJS, output as .js so Electron finds it
   build({
     ...sharedOpts,
     entryPoints: ["electron/preload.ts"],
     outfile: "electron/preload.js",
     format: "cjs",
-    external: ["electron"],
   }),
 ]);
 
