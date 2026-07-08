@@ -11,7 +11,7 @@ export default defineConfig({
       babel: { plugins: [] },
     }),
     runtimeErrorOverlay(),
-    VitePWA({
+    ...(process.env.ELECTRON_BUILD === "true" ? [] : [VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "icon-192.webp", "icon-512.webp"],
       manifest: {
@@ -76,7 +76,7 @@ export default defineConfig({
           },
         ],
       },
-    }),
+    })]),
     ...(process.env.NODE_ENV !== "production" &&
     process.env.REPL_ID !== undefined
       ? [
