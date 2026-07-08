@@ -1,0 +1,268 @@
+PS C:\dev\hajdehamk> npm run electron:build
+
+> rest-express@1.0.0 electron:build
+> npm run electron:build:frontend && npm run electron:build:server && electron-builder
+
+
+> rest-express@1.0.0 electron:build:frontend
+> node script/build.mjs
+
+building client...
+vite v7.3.6 building client environment for production...
+✓ 1122 modules transformed.
+✗ Build failed in 5.97s
+[vite-plugin-pwa:build] [plugin vite-plugin-pwa:build] There was an error during the build:
+  Could not load C:\dev\hajdehamk\shared/schema (imported by client/src/pages/AdminDashboard.tsx): ENOENT: no such file or directory, open 'C:\dev\hajdehamk\shared\schema'
+Additionally, handling the error in the 'buildEnd' hook caused the following error:
+  Could not load C:\dev\hajdehamk\shared/schema (imported by client/src/pages/AdminDashboard.tsx): ENOENT: no such file or directory, open 'C:\dev\hajdehamk\shared\schema'
+    at getRollupError (file:///C:/dev/hajdehamk/node_modules/rollup/dist/es/shared/parseAst.js:317:41)
+    at file:///C:/dev/hajdehamk/node_modules/rollup/dist/es/shared/node-entry.js:23924:39
+    at async catchUnfinishedHookActions (file:///C:/dev/hajdehamk/node_modules/rollup/dist/es/shared/node-entry.js:23380:16)
+    at async rollupInternal (file:///C:/dev/hajdehamk/node_modules/rollup/dist/es/shared/node-entry.js:23907:5)
+    at async buildEnvironment (file:///C:/dev/hajdehamk/node_modules/vite/dist/node/chunks/config.js:33621:12)
+    at async Object.build (file:///C:/dev/hajdehamk/node_modules/vite/dist/node/chunks/config.js:33980:19)
+    at async buildAll (file:///C:/dev/hajdehamk/script/build.mjs:10:3) {
+  errno: -4058,
+  code: 'PLUGIN_ERROR',
+  syscall: 'open',
+  path: 'C:\\dev\\hajdehamk\\shared\\schema',
+  pluginCode: 'ENOENT',
+  plugin: 'vite-plugin-pwa:build',
+  hook: 'buildEnd',
+  watchFiles: [
+    'C:/dev/hajdehamk/client/index.html',
+    'C:/dev/hajdehamk/client/src/main.tsx',
+    'C:\\dev\\hajdehamk\\package.json',
+    'C:/dev/hajdehamk/node_modules/react/jsx-runtime.js',
+    'C:/dev/hajdehamk/node_modules/react-dom/client.js',
+    'C:/dev/hajdehamk/client/src/App.tsx',
+    'C:/dev/hajdehamk/client/src/index.css',
+    'C:/dev/hajdehamk/node_modules/react/cjs/react-jsx-runtime.production.min.js',
+    'C:/dev/hajdehamk/node_modules/react-dom/index.js',
+    'C:/dev/hajdehamk/node_modules/react/index.js',
+    'C:/dev/hajdehamk/node_modules/wouter/src/index.js',
+    'C:/dev/hajdehamk/node_modules/@vercel/analytics/dist/react/index.mjs',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/index.js',
+    'C:/dev/hajdehamk/node_modules/@vercel/speed-insights/dist/react/index.mjs',
+    'C:/dev/hajdehamk/client/src/lib/queryClient.ts',
+    'C:/dev/hajdehamk/client/src/hooks/useDarkMode.ts',
+    'C:/dev/hajdehamk/client/src/components/ui/toaster.tsx',
+    'C:/dev/hajdehamk/client/src/components/DarkModeToggle.tsx',
+    'C:/dev/hajdehamk/client/src/pages/PublicMenu.tsx',
+    'C:/dev/hajdehamk/client/src/pages/Home.tsx',
+    'C:/dev/hajdehamk/client/src/pages/AuthLogin.tsx',
+    'C:/dev/hajdehamk/client/src/pages/not-found.tsx',
+    'C:/dev/hajdehamk/client/src/pages/AdminDashboard.tsx',
+    'C:/dev/hajdehamk/client/src/pages/TablePage.tsx',
+    'C:/dev/hajdehamk/client/src/pages/KDS.tsx',
+    'C:/dev/hajdehamk/node_modules/react-day-picker/dist/style.css',
+    'C:/dev/hajdehamk/client/src/hooks/use-auth.ts',
+    'C:/dev/hajdehamk/client/src/hooks/use-menu-items.ts',
+    'C:/dev/hajdehamk/client/src/hooks/use-restaurants.ts',
+    'C:/dev/hajdehamk/client/src/hooks/use-toast.ts',
+    'C:/dev/hajdehamk/client/src/lib/utils.ts',
+    'C:/dev/hajdehamk/client/src/components/ProtectedRoute.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/accordion.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/alert-dialog.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/alert.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/aspect-ratio.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/avatar.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/badge.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/breadcrumb.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/button.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/calendar.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/card.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/carousel.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/chart.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/checkbox.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/collapsible.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/command.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/context-menu.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/dialog.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/drawer.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/dropdown-menu.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/form.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/hover-card.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/input-otp.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/input.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/label.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/menubar.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/navigation-menu.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/pagination.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/popover.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/progress.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/radio-group.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/resizable.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/scroll-area.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/select.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/separator.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/sheet.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/sidebar.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/skeleton.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/slider.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/switch.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/table.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/tabs.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/textarea.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/toast.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/toggle-group.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/toggle.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/tooltip.tsx',
+    'C:/dev/hajdehamk/client/src/hooks/use-mobile.tsx',
+    'C:/dev/hajdehamk/client/src/pages/AdminRestaurant.tsx',
+    'C:/dev/hajdehamk/client/src/pages/POS.tsx',
+    'C:/dev/hajdehamk/client/src/pages/TableCart.tsx',
+    'C:/dev/hajdehamk/tailwind.config.ts',
+    'C:/dev/hajdehamk/node_modules/react-dom/cjs/react-dom.production.min.js',
+    'C:/dev/hajdehamk/node_modules/wouter/src/paths.js',
+    'C:/dev/hajdehamk/node_modules/regexparam/dist/index.mjs',
+    'C:/dev/hajdehamk/node_modules/wouter/src/use-browser-location.js',
+    'C:/dev/hajdehamk/node_modules/react/cjs/react.production.min.js',
+    'C:/dev/hajdehamk/node_modules/wouter/src/react-deps.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/types.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useQuery.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/query-core/build/modern/index.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useQueries.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/usePrefetchQuery.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/usePrefetchInfiniteQuery.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/queryOptions.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/infiniteQueryOptions.js',
+    ... 1044 more items
+  ],
+  Symbol(augmented): true
+}
+PS C:\dev\hajdehamk> npm run electron:build
+
+> rest-express@1.0.0 electron:build
+> npm run electron:build:frontend && npm run electron:build:server && electron-builder
+
+
+> rest-express@1.0.0 electron:build:frontend
+> node script/build-electron-frontend.mjs
+
+building client (Electron)...
+vite v7.3.6 building client environment for production...
+✓ 1111 modules transformed.
+✗ Build failed in 8.55s
+[vite:load-fallback] Could not load C:\dev\hajdehamk\shared/routes (imported by client/src/pages/Home.tsx): ENOENT: no such file or directory, open 'C:\dev\hajdehamk\shared\routes'
+    at async open (node:internal/fs/promises:1360:25)
+    at async Object.readFile (node:internal/fs/promises:2149:14)
+    at async Object.handler (file:///C:/dev/hajdehamk/node_modules/vite/dist/node/chunks/config.js:33249:21)
+    at async PluginDriver.hookFirstAndGetPlugin (file:///C:/dev/hajdehamk/node_modules/rollup/dist/es/shared/node-entry.js:22908:28)
+    at async file:///C:/dev/hajdehamk/node_modules/rollup/dist/es/shared/node-entry.js:21894:33
+    at async Queue.work (file:///C:/dev/hajdehamk/node_modules/rollup/dist/es/shared/node-entry.js:23136:32) {
+  errno: -4058,
+  code: 'PLUGIN_ERROR',
+  syscall: 'open',
+  path: 'C:\\dev\\hajdehamk\\shared\\routes',
+  pluginCode: 'ENOENT',
+  plugin: 'vite:load-fallback',
+  hook: 'load',
+  watchFiles: [
+    'C:/dev/hajdehamk/client/index.html',
+    'C:/dev/hajdehamk/client/src/main.tsx',
+    'C:\\dev\\hajdehamk\\package.json',
+    'C:/dev/hajdehamk/node_modules/react/jsx-runtime.js',
+    'C:/dev/hajdehamk/node_modules/react-dom/client.js',
+    'C:/dev/hajdehamk/client/src/index.css',
+    'C:/dev/hajdehamk/client/src/App.tsx',
+    'C:/dev/hajdehamk/node_modules/react/cjs/react-jsx-runtime.production.min.js',
+    'C:/dev/hajdehamk/node_modules/react-dom/index.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/index.js',
+    'C:/dev/hajdehamk/node_modules/@vercel/speed-insights/dist/react/index.mjs',
+    'C:/dev/hajdehamk/client/src/components/DarkModeToggle.tsx',
+    'C:/dev/hajdehamk/node_modules/@vercel/analytics/dist/react/index.mjs',
+    'C:/dev/hajdehamk/client/src/components/ui/toaster.tsx',
+    'C:/dev/hajdehamk/node_modules/wouter/src/index.js',
+    'C:/dev/hajdehamk/client/src/hooks/useDarkMode.ts',
+    'C:/dev/hajdehamk/client/src/components/ui/tooltip.tsx',
+    'C:/dev/hajdehamk/client/src/pages/Home.tsx',
+    'C:/dev/hajdehamk/client/src/pages/not-found.tsx',
+    'C:/dev/hajdehamk/client/src/pages/KDS.tsx',
+    'C:/dev/hajdehamk/client/src/pages/AuthLogin.tsx',
+    'C:/dev/hajdehamk/client/src/pages/PublicMenu.tsx',
+    'C:/dev/hajdehamk/client/src/lib/queryClient.ts',
+    'C:/dev/hajdehamk/client/src/components/ProtectedRoute.tsx',
+    'C:/dev/hajdehamk/client/src/pages/POS.tsx',
+    'C:/dev/hajdehamk/client/src/pages/TablePage.tsx',
+    'C:/dev/hajdehamk/client/src/pages/AdminDashboard.tsx',
+    'C:/dev/hajdehamk/client/src/pages/AdminRestaurant.tsx',
+    'C:/dev/hajdehamk/node_modules/react/index.js',
+    'C:/dev/hajdehamk/node_modules/react-day-picker/dist/style.css',
+    'C:/dev/hajdehamk/client/src/hooks/use-auth.ts',
+    'C:/dev/hajdehamk/client/src/hooks/use-menu-items.ts',
+    'C:/dev/hajdehamk/client/src/hooks/use-restaurants.ts',
+    'C:/dev/hajdehamk/client/src/hooks/use-toast.ts',
+    'C:/dev/hajdehamk/client/src/lib/utils.ts',
+    'C:/dev/hajdehamk/client/src/components/ui/accordion.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/alert-dialog.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/alert.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/aspect-ratio.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/avatar.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/badge.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/breadcrumb.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/button.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/calendar.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/card.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/carousel.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/chart.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/checkbox.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/collapsible.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/command.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/context-menu.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/dialog.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/drawer.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/dropdown-menu.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/form.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/hover-card.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/input-otp.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/input.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/label.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/menubar.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/navigation-menu.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/pagination.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/popover.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/progress.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/radio-group.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/resizable.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/scroll-area.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/select.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/separator.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/sheet.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/sidebar.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/skeleton.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/slider.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/switch.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/table.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/tabs.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/textarea.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/toast.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/toggle-group.tsx',
+    'C:/dev/hajdehamk/client/src/components/ui/toggle.tsx',
+    'C:/dev/hajdehamk/client/src/hooks/use-mobile.tsx',
+    'C:/dev/hajdehamk/client/src/pages/TableCart.tsx',
+    'C:/dev/hajdehamk/tailwind.config.ts',
+    'C:/dev/hajdehamk/node_modules/react-dom/cjs/react-dom.production.min.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/types.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useQuery.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useQueries.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/usePrefetchQuery.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/query-core/build/modern/index.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/usePrefetchInfiniteQuery.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/queryOptions.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/infiniteQueryOptions.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useIsFetching.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/useMutationState.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/HydrationBoundary.js',
+    'C:/dev/hajdehamk/node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js',
+    ... 1041 more items
+  ]
+}
+PS C:\dev\hajdehamk>
