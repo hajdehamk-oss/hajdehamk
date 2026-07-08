@@ -92,6 +92,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src").replace(/\\/g, "/"),
+      "@shared/schema": path.resolve(import.meta.dirname, "shared", "schema.ts").replace(/\\/g, "/"),
+      "@shared/routes": path.resolve(import.meta.dirname, "shared", "routes.ts").replace(/\\/g, "/"),
       "@shared": path.resolve(import.meta.dirname, "shared").replace(/\\/g, "/"),
     },
   },
