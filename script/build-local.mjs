@@ -25,22 +25,23 @@ const sharedOpts = {
 // Build all three Electron artifacts in parallel
 await Promise.all([
   // Local server — ESM so top-level await works
+  // define + minifySyntax strips the dev-only vite import that would crash in production
   build({
     ...sharedOpts,
     entryPoints: ["server/index-local.ts"],
     outfile: "dist/index-local.mjs",
     format: "esm",
+    define: { "process.env.NODE_ENV": '"production"' },
+    minifySyntax: true,
   }),
 
   // Electron main process — CJS (Electron default)
+  // No __filename/__dirname banner needed — Node provides them natively in CJS
   build({
     ...sharedOpts,
     entryPoints: ["electron/main.ts"],
     outfile: "electron/main.cjs",
     format: "cjs",
-    banner: {
-      js: `const __filename = require('path').resolve(process.argv[1]); const __dirname = require('path').dirname(__filename);`,
-    },
   }),
 
   // Preload — CJS, output as .js so Electron finds it

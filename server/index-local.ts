@@ -18,8 +18,8 @@ const CONFIG_PATH =
 
 interface LocalConfig {
   slug: string;
-  pusherKey: string;
-  pusherCluster: string;
+  pusherKey?: string;
+  pusherCluster?: string;
 }
 
 function loadConfig(): LocalConfig | null {
@@ -201,8 +201,8 @@ async function main() {
 
   app.post("/api/local/config", (req, res) => {
     const { slug, pusherKey, pusherCluster } = req.body;
-    if (!slug || !pusherKey || !pusherCluster) {
-      return res.status(400).json({ message: "All fields required" });
+    if (!slug) {
+      return res.status(400).json({ message: "Slug is required" });
     }
     fs.mkdirSync(path.dirname(CONFIG_PATH), { recursive: true });
     fs.writeFileSync(
@@ -571,13 +571,20 @@ async function main() {
   httpServer.listen({ port: PORT, host: HOST }, async () => {
     console.log(`[local] Server on port ${PORT}`);
     if (config?.slug) {
-      const restaurant = await syncFromCloud(config.slug);
+      // Always check local SQLite first — the app must work offline.
+      const localRestaurant = await localStore.getRestaurantBySlug(config.slug);
+
+      // Try syncing from cloud (non-blocking — failure is fine when offline).
+      const synced = await syncFromCloud(config.slug);
+      const restaurant = synced || localRestaurant;
+
       if (restaurant) {
+        // Start Pusher listener (uses cloud real-time orders) — optional, skipped if no key.
         await startPusherListener(config.slug, restaurant.id);
-        setInterval(
-          () => syncFromCloud(config.slug!),
-          60 * 60 * 1000,
-        );
+        // Hourly sync — best-effort, silently fails when offline.
+        setInterval(() => syncFromCloud(config.slug!), 60 * 60 * 1000);
+      } else {
+        console.warn("[local] No restaurant data found. Open the app and use File → Sync from Cloud when online.");
       }
     }
   });

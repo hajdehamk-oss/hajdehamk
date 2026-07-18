@@ -13,8 +13,8 @@ const DB_PATH = path.join(app.getPath("userData"), "hajdeha-local.db");
 
 interface LocalConfig {
   slug: string;
-  pusherKey: string;
-  pusherCluster: string;
+  pusherKey?: string;
+  pusherCluster?: string;
 }
 
 function loadConfig(): LocalConfig | null {
@@ -26,6 +26,18 @@ function loadConfig(): LocalConfig | null {
   return null;
 }
 
+// ── Single instance lock ───────────────────────────────────────────────────────
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+  app.quit();
+}
+app.on("second-instance", () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+  }
+});
+
 // ── Server process ─────────────────────────────────────────────────────────────
 let serverProcess: ChildProcess | null = null;
 const PORT = 5050; // Use 5050 for local app to avoid conflict with dev server
@@ -33,7 +45,7 @@ const PORT = 5050; // Use 5050 for local app to avoid conflict with dev server
 function startServer(config: LocalConfig | null): Promise<void> {
   return new Promise((resolve, reject) => {
     const serverScript = app.isPackaged
-      ? path.join(process.resourcesPath, "index-local.mjs")
+      ? path.join(process.resourcesPath, "app.asar", "dist", "index-local.mjs")
       : path.join(__dirname, "../server/index-local.ts");
 
     const command = app.isPackaged
@@ -49,10 +61,21 @@ function startServer(config: LocalConfig | null): Promise<void> {
       IS_ELECTRON: "true",
     };
 
-    if (config) {
-      env.VITE_PUSHER_KEY = config.pusherKey;
-      env.VITE_PUSHER_CLUSTER = config.pusherCluster;
+    // Without this, Electron's execPath spawns another full Electron window
+    // instead of running the script as plain Node.
+    if (app.isPackaged) {
+      env.ELECTRON_RUN_AS_NODE = "1";
+      // Let the server find the built frontend assets inside the asar
+      env.STATIC_DIST_PATH = path.join(
+        process.resourcesPath,
+        "app.asar",
+        "dist",
+        "public"
+      );
     }
+
+    if (config?.pusherKey) env.VITE_PUSHER_KEY = config.pusherKey;
+    if (config?.pusherCluster) env.VITE_PUSHER_CLUSTER = config.pusherCluster;
 
     serverProcess = spawn(command, [serverScript], { env, stdio: "pipe" });
 
@@ -164,6 +187,10 @@ ipcMain.handle("save-config", (_event, config: LocalConfig) => {
 });
 
 ipcMain.handle("restart-app", () => {
+  if (serverProcess) {
+    serverProcess.kill();
+    serverProcess = null;
+  }
   app.relaunch();
   app.exit(0);
 });

@@ -3,8 +3,12 @@ import fs from "fs";
 import path from "path";
 
 export function serveStatic(app: Express) {
-  // Use process.cwd() for CommonJS compatibility instead of __dirname
-  const distPath = path.resolve(process.cwd(), "dist", "public");
+  // STATIC_DIST_PATH is set by the packaged Electron app so the local server
+  // can find the frontend assets inside app.asar regardless of the launch CWD.
+  // Falls back to process.cwd()-based lookup for Vercel and dev mode.
+  const distPath = process.env.STATIC_DIST_PATH
+    ? path.resolve(process.env.STATIC_DIST_PATH)
+    : path.resolve(process.cwd(), "dist", "public");
 
   if (!fs.existsSync(distPath)) {
     throw new Error(

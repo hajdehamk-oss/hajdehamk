@@ -78,12 +78,12 @@
     <input id="slug" type="text" placeholder="doner" />
     <div class="hint">The part after hajdeha.com/pos/ — e.g. "doner"</div>
 
-    <label>Pusher Key</label>
+    <label>Pusher Key <span style="font-weight:400;color:#999">(optional — only needed for web ordering)</span></label>
     <input id="pusherKey" type="text" placeholder="abc123def456" />
 
-    <label>Pusher Cluster</label>
+    <label>Pusher Cluster <span style="font-weight:400;color:#999">(optional)</span></label>
     <input id="pusherCluster" type="text" placeholder="eu" />
-    <div class="hint">Found in your Pusher dashboard — usually "eu", "us2", etc.</div>
+    <div class="hint">Leave blank to use the POS fully offline. Fill in only if customers order via hajdeha.com.</div>
 
     <button onclick="save()">Start POS →</button>
   </div>
@@ -95,8 +95,8 @@
       const pusherCluster = document.getElementById('pusherCluster').value.trim();
       const err = document.getElementById('error');
 
-      if (!slug || !pusherKey || !pusherCluster) {
-        err.textContent = 'All fields are required.';
+      if (!slug) {
+        err.textContent = 'Restaurant slug is required.';
         err.style.display = 'block';
         return;
       }
