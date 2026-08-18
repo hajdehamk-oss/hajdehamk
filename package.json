@@ -36,7 +36,7 @@
           ]
         }
       ],
-      "icon": "client/public/icon-512.webp"
+      "icon": "client/public/favicon.png"
     },
     "mac": {
       "target": [
@@ -48,7 +48,7 @@
           ]
         }
       ],
-      "icon": "client/public/icon-512.webp"
+      "icon": "client/public/favicon.png"
     },
     "linux": {
       "target": [
