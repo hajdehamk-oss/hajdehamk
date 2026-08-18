@@ -1,4 +1,3 @@
-const __filename = require('path').resolve(process.argv[1]); const __dirname = require('path').dirname(__filename);
 "use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
@@ -40,11 +39,21 @@ function loadConfig() {
   }
   return null;
 }
+var gotLock = import_electron.app.requestSingleInstanceLock();
+if (!gotLock) {
+  import_electron.app.quit();
+}
+import_electron.app.on("second-instance", () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.focus();
+  }
+});
 var serverProcess = null;
 var PORT = 5050;
 function startServer(config) {
   return new Promise((resolve, reject) => {
-    const serverScript = import_electron.app.isPackaged ? import_path.default.join(process.resourcesPath, "index-local.mjs") : import_path.default.join(__dirname, "../server/index-local.ts");
+    const serverScript = import_electron.app.isPackaged ? import_path.default.join(process.resourcesPath, "app.asar", "dist", "index-local.mjs") : import_path.default.join(__dirname, "../server/index-local.ts");
     const command = import_electron.app.isPackaged ? process.execPath : "node_modules/.bin/tsx";
     const env = {
       ...process.env,
@@ -54,10 +63,17 @@ function startServer(config) {
       LOCAL_CONFIG_PATH: CONFIG_PATH,
       IS_ELECTRON: "true"
     };
-    if (config) {
-      env.VITE_PUSHER_KEY = config.pusherKey;
-      env.VITE_PUSHER_CLUSTER = config.pusherCluster;
+    if (import_electron.app.isPackaged) {
+      env.ELECTRON_RUN_AS_NODE = "1";
+      env.STATIC_DIST_PATH = import_path.default.join(
+        process.resourcesPath,
+        "app.asar",
+        "dist",
+        "public"
+      );
     }
+    if (config?.pusherKey) env.VITE_PUSHER_KEY = config.pusherKey;
+    if (config?.pusherCluster) env.VITE_PUSHER_CLUSTER = config.pusherCluster;
     serverProcess = (0, import_child_process.spawn)(command, [serverScript], { env, stdio: "pipe" });
     serverProcess.stdout?.on("data", (d) => process.stdout.write("[server] " + d));
     serverProcess.stderr?.on("data", (d) => process.stderr.write("[server] " + d));
@@ -153,6 +169,10 @@ import_electron.ipcMain.handle("save-config", (_event, config) => {
   return { ok: true };
 });
 import_electron.ipcMain.handle("restart-app", () => {
+  if (serverProcess) {
+    serverProcess.kill();
+    serverProcess = null;
+  }
   import_electron.app.relaunch();
   import_electron.app.exit(0);
 });

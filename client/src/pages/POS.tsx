@@ -26,6 +26,7 @@ import {
   ClipboardList,
   KeyRound,
   ChefHat,
+  Pencil,
 } from "lucide-react";
 
 interface MenuItem {
@@ -959,11 +960,17 @@ function RadialMenu({ x, y, onSelect, onClose, isLight }: RadialMenuProps) {
 // ─── Main POS Component ───────────────────────────────────────────────────────
 export default function POS({ slug }: POSProps) {
   const RESTAURANT_SLUG = slug;
+  const isLocalPos =
+    typeof window !== "undefined" && !!(window as any).electronAPI;
   const TABLES_KEY = `pos-${slug}-tables-v3`;
   const PERSONS_KEY = `pos-${slug}-persons-v1`;
   const SECTIONS_KEY = `pos-${slug}-sections-v1`;
 
-  const { data: restaurant, isLoading } = useQuery({
+  const {
+    data: restaurant,
+    isLoading,
+    refetch: refetchRestaurant,
+  } = useQuery({
     queryKey: ["pos-restaurant"],
     queryFn: async () => {
       const res = await fetch(`/api/restaurants?slug=${RESTAURANT_SLUG}`);
@@ -989,6 +996,10 @@ export default function POS({ slug }: POSProps) {
     useState<string>("Indoor");
   const [discountItemId, setDiscountItemId] = useState<number | null>(null);
   const [discountInput, setDiscountInput] = useState("");
+  const [showPriceEditor, setShowPriceEditor] = useState(false);
+  const [priceDrafts, setPriceDrafts] = useState<Record<number, string>>({});
+  const [priceSaving, setPriceSaving] = useState(false);
+  const [priceError, setPriceError] = useState("");
 
   const [tables, setTables] = useState<TableOrder[]>(() => {
     try {
@@ -1563,6 +1574,51 @@ export default function POS({ slug }: POSProps) {
         (i.nameMk ?? "").toLowerCase().includes(q),
     );
   }, [menuItems, activeCategory, menuSearch]);
+
+  const openPriceEditor = () => {
+    setPriceDrafts(
+      Object.fromEntries(
+        menuItems.map((item) => [item.id, String(parsePrice(item.price))]),
+      ),
+    );
+    setPriceError("");
+    setShowPriceEditor(true);
+  };
+
+  const savePrices = async () => {
+    setPriceError("");
+    const changedItems = menuItems.filter(
+      (item) => Number(priceDrafts[item.id]) !== parsePrice(item.price),
+    );
+    for (const item of changedItems) {
+      const numericPrice = Number(priceDrafts[item.id]);
+      if (!Number.isFinite(numericPrice) || numericPrice < 0) {
+        setPriceError(`Enter a valid price for ${localName(item, lang)}.`);
+        return;
+      }
+    }
+
+    setPriceSaving(true);
+    try {
+      for (const item of changedItems) {
+        const res = await fetch(`/api/pos/menu-items/${item.id}/price`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ price: Number(priceDrafts[item.id]) }),
+        });
+        if (!res.ok) {
+          const details = await res.json().catch(() => ({}));
+          throw new Error(details.message || "Could not save prices");
+        }
+      }
+      await refetchRestaurant();
+      setShowPriceEditor(false);
+    } catch (error: any) {
+      setPriceError(error.message || "Could not save prices");
+    } finally {
+      setPriceSaving(false);
+    }
+  };
 
   const currentOrder: TableOrder | PersonTab | null = useMemo(() => {
     if (!active) return null;
@@ -2615,6 +2671,16 @@ export default function POS({ slug }: POSProps) {
                 : tr.orderScreen}
           </p>
         </div>
+        {isLocalPos && (
+          <button
+            onClick={openPriceEditor}
+            title="Edit local POS prices"
+            className={`h-8 w-8 lg:h-10 lg:w-10 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${t.backBtn} hover:text-amber-400`}
+            data-testid="button-header-edit-prices"
+          >
+            <Pencil className="h-4 w-4 lg:h-5 lg:w-5" />
+          </button>
+        )}
         {/* Printer */}
         <button
           onClick={usbDevice ? () => setUsbDevice(null) : connectPrinter}
@@ -3272,6 +3338,17 @@ export default function POS({ slug }: POSProps) {
                         className={`${t.textDim} hover:${t.textMuted} transition-colors`}
                       >
                         <X className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                    {isLocalPos && (
+                      <button
+                        onClick={openPriceEditor}
+                        className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[10px] font-bold transition-colors ${t.surfaceSoft} ${t.textMuted} hover:text-amber-400`}
+                        title="Edit local POS prices"
+                        data-testid="button-edit-prices"
+                      >
+                        <Pencil className="h-3 w-3" />
+                        <span className="hidden sm:inline">Edit prices</span>
                       </button>
                     )}
                   </div>
@@ -5051,6 +5128,95 @@ export default function POS({ slug }: POSProps) {
           </>
         )}
       </AnimatePresence>
+
+      {showPriceEditor && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4"
+          onClick={() => {
+            if (!priceSaving) setShowPriceEditor(false);
+          }}
+        >
+          <div
+            className={`w-full max-w-lg max-h-[85vh] overflow-hidden rounded-2xl border ${t.border} ${t.panelBg} shadow-2xl`}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className={`flex items-center gap-3 border-b ${t.border} px-5 py-4`}>
+              <Pencil className="h-4 w-4 text-amber-400" />
+              <div className="min-w-0">
+                <h2 className={`text-base font-bold ${t.text}`}>
+                  Edit POS prices
+                </h2>
+                <p className={`text-[11px] ${t.textDim}`}>
+                  These prices are saved on this PC only. The QR website is unchanged.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowPriceEditor(false)}
+                disabled={priceSaving}
+                className={`ml-auto rounded-lg p-2 ${t.textMuted} hover:text-amber-400 disabled:opacity-40`}
+                aria-label="Close price editor"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="max-h-[58vh] overflow-y-auto p-4 space-y-2">
+              {menuItems.map((item) => (
+                <div
+                  key={item.id}
+                  className={`flex items-center gap-3 rounded-xl border ${t.border} ${t.surface} px-3 py-2.5`}
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className={`truncate text-sm font-semibold ${t.textSoft}`}>
+                      {localName(item, lang)}
+                    </p>
+                    <p className={`text-[10px] ${t.textDim}`}>{item.category}</p>
+                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    inputMode="numeric"
+                    value={priceDrafts[item.id] ?? ""}
+                    onChange={(event) =>
+                      setPriceDrafts((previous) => ({
+                        ...previous,
+                        [item.id]: event.target.value,
+                      }))
+                    }
+                    className={`w-28 rounded-lg border ${t.border} ${t.surfaceSoft} px-2.5 py-2 text-right text-sm font-bold ${t.text} outline-none focus:border-amber-400`}
+                    aria-label={`Price for ${localName(item, lang)}`}
+                    data-testid={`input-price-${item.id}`}
+                  />
+                  <span className={`text-xs ${t.textDim}`}>DEN</span>
+                </div>
+              ))}
+            </div>
+
+            {priceError && (
+              <p className="px-5 pb-2 text-xs text-red-400">{priceError}</p>
+            )}
+
+            <div className={`flex gap-2 border-t ${t.border} p-4`}>
+              <button
+                onClick={() => setShowPriceEditor(false)}
+                disabled={priceSaving}
+                className={`flex-1 rounded-xl py-2.5 text-sm font-semibold ${t.surfaceSoft} ${t.textMuted} disabled:opacity-40`}
+              >
+                {tr.cancel}
+              </button>
+              <button
+                onClick={savePrices}
+                disabled={priceSaving}
+                className="flex-1 rounded-xl bg-amber-500 py-2.5 text-sm font-bold text-black disabled:opacity-50"
+                data-testid="button-save-prices"
+              >
+                {priceSaving ? "Saving…" : "Save prices"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Radial Quick-Add Menu */}
       {radialMenu && (

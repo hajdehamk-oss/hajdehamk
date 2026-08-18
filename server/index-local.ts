@@ -34,7 +34,7 @@ function loadConfig(): LocalConfig | null {
 // ── Main ──────────────────────────────────────────────────────────────────────
 async function main() {
   // Import SQLite storage (only in this file so it doesn't affect cloud server)
-  const { LocalStorage } = await import("./storage-local.js");
+  const { LocalStorage, menuItemKey } = await import("./storage-local.js");
   const localStore = new LocalStorage();
 
   const config = loadConfig();
@@ -132,6 +132,9 @@ async function main() {
 
       // Sync menu items — delete and re-insert
       if (Array.isArray(data.menuItems)) {
+        const priceOverrides = await localStore.getMenuPriceOverrides(
+          restaurant.id,
+        );
         const { localDb } = await import("./db-local.js");
         const { menuItems: menuItemsTable } = await import(
           "../shared/schema-local.js"
@@ -150,7 +153,14 @@ async function main() {
             description: item.description,
             descriptionAl: item.descriptionAl,
             descriptionMk: item.descriptionMk,
-            price: item.price,
+            // Keep a price edited at the POS when the next cloud sync runs.
+            price:
+              priceOverrides.get(
+                menuItemKey({
+                  name: item.name,
+                  category: item.category || "Main",
+                }),
+              ) ?? item.price,
             category: item.category || "Main",
             imageUrl: item.imageUrl,
             active: item.active ?? true,
@@ -266,6 +276,31 @@ async function main() {
       return res.end(buf);
     } catch {
       res.status(500).end();
+    }
+  });
+
+  // Local POS-only price editing. This does not update the online QR menu.
+  app.patch("/api/pos/menu-items/:id/price", async (req, res) => {
+    try {
+      const id = Number(req.params.id);
+      const numericPrice = Number(req.body?.price);
+      if (!Number.isInteger(id) || !Number.isFinite(numericPrice) || numericPrice < 0) {
+        return res.status(400).json({ message: "A valid non-negative price is required" });
+      }
+
+      const item = await localStore.getMenuItem(id);
+      if (!item) return res.status(404).json({ message: "Menu item not found" });
+
+      const price = `${Math.round(numericPrice)} DEN`;
+      const updated = await localStore.updateMenuItem(id, { price });
+      await localStore.setMenuPriceOverride(
+        item.restaurantId,
+        menuItemKey(item),
+        price,
+      );
+      return res.json(updated);
+    } catch (err: any) {
+      return res.status(500).json({ message: err.message });
     }
   });
 
