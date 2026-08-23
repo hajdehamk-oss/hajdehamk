@@ -58,18 +58,6 @@ export const menuItems = sqliteTable("menu_items", {
   specialType: text("special_type"),
 });
 
-export const menuPriceOverrides = sqliteTable("menu_price_overrides", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  restaurantId: integer("restaurant_id")
-    .notNull()
-    .references(() => restaurants.id),
-  itemKey: text("item_key").notNull(),
-  price: text("price").notNull(),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
-    .$defaultFn(() => new Date())
-    .notNull(),
-});
-
 export const waiters = sqliteTable("waiters", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   restaurantId: integer("restaurant_id")
@@ -119,7 +107,6 @@ export const posTableState = sqliteTable("pos_table_state", {
 
 export type Restaurant = typeof restaurants.$inferSelect;
 export type MenuItem = typeof menuItems.$inferSelect;
-export type MenuPriceOverride = typeof menuPriceOverrides.$inferSelect;
 export type Waiter = typeof waiters.$inferSelect;
 export type Order = typeof orders.$inferSelect;
 export type TableAssignment = typeof tableAssignments.$inferSelect;

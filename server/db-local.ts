@@ -64,15 +64,6 @@ sqlite.exec(`
     special_type TEXT
   );
 
-  CREATE TABLE IF NOT EXISTS menu_price_overrides (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    restaurant_id INTEGER NOT NULL REFERENCES restaurants(id),
-    item_key TEXT NOT NULL,
-    price TEXT NOT NULL,
-    updated_at INTEGER NOT NULL DEFAULT (strftime('%s','now') * 1000),
-    UNIQUE (restaurant_id, item_key)
-  );
-
   CREATE TABLE IF NOT EXISTS waiters (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     restaurant_id INTEGER NOT NULL REFERENCES restaurants(id),

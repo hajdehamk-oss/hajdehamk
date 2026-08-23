@@ -475,7 +475,7 @@ function SortableMenuItemCard({
         </div>
       )}
 
-      <div className="flex gap-1 mt-2 pt-2 border-t border-border opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex gap-1 mt-2 pt-2 border-t border-border opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         <Button
           variant="ghost"
           size="sm"

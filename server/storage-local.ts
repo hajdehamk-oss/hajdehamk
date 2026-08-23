@@ -3,7 +3,6 @@ import { localDb as db } from "./db-local.js";
 import {
   restaurants,
   menuItems,
-  menuPriceOverrides,
   waiters,
   orders,
   tableAssignments,
@@ -15,14 +14,6 @@ import {
   type TableAssignment,
 } from "../shared/schema-local.js";
 import type { IStorage } from "./storage.js";
-
-// Stable across cloud re-syncs, unlike the local SQLite auto-increment id.
-export function menuItemKey(item: {
-  name: string;
-  category?: string | null;
-}): string {
-  return `${String(item.category || "Main").trim().toLowerCase()}::${String(item.name).trim().toLowerCase()}`;
-}
 
 /**
  * SQLite-backed storage for the Electron desktop app.
@@ -107,36 +98,6 @@ export class LocalStorage implements IStorage {
 
   async deleteMenuItem(id: number): Promise<void> {
     db.delete(menuItems).where(eq(menuItems.id, id)).run();
-  }
-
-  async getMenuPriceOverrides(restaurantId: number): Promise<Map<string, string>> {
-    const rows = db
-      .select({
-        itemKey: menuPriceOverrides.itemKey,
-        price: menuPriceOverrides.price,
-      })
-      .from(menuPriceOverrides)
-      .where(eq(menuPriceOverrides.restaurantId, restaurantId))
-      .all();
-    return new Map(rows.map((row) => [row.itemKey, row.price]));
-  }
-
-  async setMenuPriceOverride(
-    restaurantId: number,
-    itemKey: string,
-    price: string,
-  ): Promise<void> {
-    db.delete(menuPriceOverrides)
-      .where(
-        and(
-          eq(menuPriceOverrides.restaurantId, restaurantId),
-          eq(menuPriceOverrides.itemKey, itemKey),
-        ),
-      )
-      .run();
-    db.insert(menuPriceOverrides)
-      .values({ restaurantId, itemKey, price, updatedAt: new Date() })
-      .run();
   }
 
   // ── Waiters ───────────────────────────────────────────────────────────────
